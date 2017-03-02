@@ -1,14 +1,14 @@
-package cs652.j.semantics;
+package cs652.j.parser.semantics;
 
-import cs652.j.parser.JParser;
+import cs652.j.parser.JBaseListener;
 import org.antlr.symtab.GlobalScope;
-import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Scope;
 import org.antlr.symtab.Type;
-import org.antlr.symtab.TypedSymbol;
-import org.antlr.symtab.VariableSymbol;
 
 public class ComputeTypes extends JBaseListener {
 	protected StringBuilder buf = new StringBuilder();
+	GlobalScope global;
+	Scope currentScope;
 
 	public static final Type JINT_TYPE = new JPrimitiveType("int");
 	public static final Type JFLOAT_TYPE = new JPrimitiveType("float");

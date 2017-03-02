@@ -7,7 +7,10 @@
       <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/antlr4" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -16,5 +19,14 @@
     <orderEntry type="library" name="Maven: org.antlr:antlr4:4.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:symtab:1.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.5.1" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../antlr-4.6-complete.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

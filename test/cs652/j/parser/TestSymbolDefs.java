@@ -1,9 +1,6 @@
-package cs652.j;
+package cs652.j.parser;
 
-import cs652.j.parser.JLexer;
-import cs652.j.parser.JParser;
-import cs652.j.semantics.ComputeTypes;
-import cs652.j.semantics.DefineScopesAndSymbols;
+import cs652.j.parser.semantics.DefineScopesAndSymbols;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Utils;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -24,8 +21,8 @@ import java.net.URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TestExprTypes extends CommonBaseTest {
-	public TestExprTypes(String filename) {
+public class TestSymbolDefs extends CommonBaseTest {
+	public TestSymbolDefs(String filename) {
 		super(filename);
 	}
 
@@ -39,7 +36,7 @@ public class TestExprTypes extends CommonBaseTest {
 		String testFolder = testFolderURL.getPath();
 
 		String J_pathToFile = testFolder+"/"+filename;
-		String Types_filename = basename(filename)+".types";
+		String Sym_filename = basename(filename)+".defs";
 
 		GlobalScope globals = new GlobalScope(null);
 
@@ -65,12 +62,8 @@ public class TestExprTypes extends CommonBaseTest {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(def, tree);
 
-		ComputeTypes computeTypes = new ComputeTypes(globals);
-		walker = new ParseTreeWalker();
-		walker.walk(computeTypes, tree);
-
-		String expecting = readFile(new File(testFolder,Types_filename).getPath());
-		String result = computeTypes.getRefOutput();
+		String expecting = readFile(new File(testFolder,Sym_filename).getPath());
+		String result = Utils.toString(globals);
 		assertEquals(expecting, result);
 	}
 }
