@@ -1,4 +1,4 @@
-package cs652.j.parser.semantics;
+package cs652.j.semantics;
 
 import org.antlr.symtab.ClassSymbol;
 import org.antlr.symtab.MemberSymbol;
@@ -17,15 +17,15 @@ public class JClass extends ClassSymbol {
 		setDefNode(tree);
 	}
 
-//	public ClassSymbol getSuperClassScope() {
-//		if ( superClassName!=null ) {
-//			if ( getEnclosingScope()!=null ) {
-//				Symbol superClass = getEnclosingScope().resolve(superClassName);
-//				if ( superClass instanceof ClassSymbol ) {
-//					return (ClassSymbol)superClass;
-//				}
-//			}
-//		}
-//		return null;
-//	}
+	public ClassSymbol getSuperClassScope() {
+		if ( superClassName!=null ) {
+			if ( getEnclosingScope()!=null ) {
+				Symbol superClass = getEnclosingScope().resolve(superClassName);
+				if ( superClass instanceof ClassSymbol ) {
+					return (ClassSymbol)superClass;
+				}
+			}
+		}
+		return null;
+	}
 }

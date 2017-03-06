@@ -1,6 +1,6 @@
 package cs652.j.parser;
 
-import cs652.j.parser.semantics.DefineScopesAndSymbols;
+import cs652.j.semantics.DefineScopesAndSymbols;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Utils;
 import org.antlr.v4.runtime.ANTLRFileStream;
