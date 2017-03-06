@@ -5,12 +5,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class JMethod extends MethodSymbol {
 
-	public String implicitparameter = "this";
 	public JMethod(String name, ParserRuleContext tree) {
 		super(name);
 		setDefNode(tree);
 	}
-
-
-
 }

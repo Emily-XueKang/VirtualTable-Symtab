@@ -32,11 +32,11 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		Type type = ComputeTypes.JVOID_TYPE;
 		JMethod main = new JMethod("main",ctx);
 		main.setType(type);
-		System.out.println("currentscope-befoermain:"+currentScope);
+		//System.out.println("currentscope-befoermain:"+currentScope);
 		currentScope.define(main);
 		currentScope = main;
 		ctx.scope = (JMethod) currentScope;
-		System.out.println("currentscope-main:"+currentScope);
+		//System.out.println("currentscope-main:"+currentScope);
 	}
 
 	@Override
@@ -46,11 +46,13 @@ public class DefineScopesAndSymbols extends JBaseListener {
 
 	@Override
 	public void enterBlock(JParser.BlockContext ctx) {
-		currentScope = new LocalScope(currentScope);
+		LocalScope ls = new LocalScope(currentScope);
+		currentScope.nest(ls);
+		currentScope = ls;
 		ctx.scope = (LocalScope) currentScope;
-		String scopename = currentScope.getName();
-		System.out.println("currentscope-blk:"+ currentScope + scopename);
-		System.out.println("currentscope-ctx.scope:"+ ctx.scope + ctx.scope.getName());
+//		String scopename = currentScope.getName();
+//		System.out.println("currentscope-blk:"+ currentScope + scopename);
+//		System.out.println("currentscope-ctx.scope:"+ ctx.scope + ctx.scope.getName());
 	}
 
 	@Override
@@ -63,15 +65,15 @@ public class DefineScopesAndSymbols extends JBaseListener {
 	public void enterLocalVariableDeclaration(JParser.LocalVariableDeclarationContext ctx) {
 		Symbol type = currentScope.resolve(ctx.jType().getText());
 		String scopename = currentScope.getName();
-		System.out.println("currentscope-blcok:"+ currentScope + scopename);
+		//System.out.println("currentscope-blcok:"+ currentScope + scopename);
 		String id = ctx.ID().getText();
-		System.out.println("varid:"+id);
+		//System.out.println("varid:"+id);
 		JVar var = new JVar(id);
 		currentScope.define(var);
-		System.out.println("currentscope-var:"+currentScope);
+		//System.out.println("currentscope-var:"+currentScope);
 		var.setType((Type) type);
 		List<JVar> vl = (List<JVar>) currentScope.getAllSymbols();
-		System.out.println("allsym:" + vl);
+		//System.out.println("allsym:" + vl);
 	}
 
 
@@ -88,18 +90,14 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope = currentScope.getEnclosingScope();
 	}
 
-	@Override
-	public void enterThisRef(JParser.ThisRefContext ctx) {
-		JClass cl = (JClass)currentScope.getEnclosingScope();
-		JClass ncl = (JClass) cl.getSuperClassScope();
-		currentScope.define(ncl);
-	}
+
 
 	@Override
 	public void enterMethodDeclaration(JParser.MethodDeclarationContext ctx) {
 		String id = ctx.ID().getText();
 		System.out.println("mid:" + id);
 		JMethod m= new JMethod(id,ctx);
+		JArg thisarg = new JArg("this");
 		if(ctx.jType()!=null){
 			Symbol type = currentScope.resolve(ctx.jType().getText());
 			m.setType((Type) type);
@@ -108,9 +106,11 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		else{
 			m.setType(JVOID_TYPE);
 		}
-
+		thisarg.setType((Type) currentScope.resolve(currentScope.getName()));
+		System.out.println("type:"+currentScope.getName());
 		currentScope.define(m);
 		currentScope = m;
+		currentScope.define(thisarg);
 		ctx.scope = (JMethod) currentScope;
 	}
 
@@ -118,8 +118,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 	public void exitMethodDeclaration(JParser.MethodDeclarationContext ctx) {
 		currentScope = currentScope.getEnclosingScope();
 	}
-
-
 
 	@Override
 	public void enterFieldDeclaration(JParser.FieldDeclarationContext ctx) {

@@ -57,6 +57,13 @@ public class ComputeTypes extends JBaseListener {
         ctx.type = var.getType();
     }
 
+    //	@Override
+//	public void enterThisRef(JParser.ThisRefContext ctx) {
+//		JClass cl = (JClass)currentScope.getEnclosingScope();
+//		JClass ncl = (JClass) cl.getSuperClassScope();
+//		currentScope.define(ncl);
+//	}
+
     public String getRefOutput() {
 		return buf.toString();
 	}
