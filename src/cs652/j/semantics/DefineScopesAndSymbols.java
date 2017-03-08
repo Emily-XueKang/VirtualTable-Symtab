@@ -19,6 +19,7 @@ public class DefineScopesAndSymbols extends JBaseListener {
 
 	@Override
 	public void enterFile(JParser.FileContext ctx) {
+		ctx.scope = (GlobalScope) currentScope;
 		currentScope.define((JPrimitiveType)JINT_TYPE);
 		currentScope.define((JPrimitiveType)JFLOAT_TYPE);
 		currentScope.define((JPrimitiveType)JSTRING_TYPE);
@@ -66,8 +67,16 @@ public class DefineScopesAndSymbols extends JBaseListener {
 
 	public void enterClassDeclaration (JParser.ClassDeclarationContext ctx){
 		String className = ctx.name.getText();
+		//String superclassName;
+//		if(ctx.superClass.getText()!=null){
+//			superclassName = ctx.superClass.getText();
+//			JClass scs = new JClass(superclassName,ctx.getParent());
+//			currentScope.define(scs);
+//		}
 		JClass cs = new JClass(className,ctx.getParent());
+
 		currentScope.define(cs);
+
 		currentScope = cs;
 		ctx.scope = (JClass) currentScope;//ClassDeclarationContext ctx's scope field is JClass type
 	}
@@ -88,7 +97,7 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		else{
 			m.setType(JVOID_TYPE);
 		}
-		thisarg.setType((Type) currentScope.resolve(currentScope.getName()));
+		thisarg.setType((Type)currentScope.resolve(currentScope.getName()));
 		currentScope.define(m);
 		currentScope = m;
 		currentScope.define(thisarg);
@@ -109,6 +118,7 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		f.setType((Type) type);
 	}
 
+
 	@Override
 	public void enterFormalParameter(JParser.FormalParameterContext ctx) {
 		Symbol type = currentScope.resolve(ctx.jType().getText());
@@ -117,8 +127,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		pv.setType((Type)type);
 		currentScope.define(pv);
 	}
+
 }
-
-
-
 
