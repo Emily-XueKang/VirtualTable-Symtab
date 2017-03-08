@@ -4,7 +4,6 @@ import cs652.j.parser.JBaseListener;
 import cs652.j.parser.JParser;
 import org.antlr.symtab.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class ComputeTypes extends JBaseListener {
 	protected StringBuilder buf = new StringBuilder();
