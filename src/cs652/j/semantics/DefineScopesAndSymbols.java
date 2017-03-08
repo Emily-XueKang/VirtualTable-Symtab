@@ -27,6 +27,11 @@ public class DefineScopesAndSymbols extends JBaseListener {
 	}
 
 	@Override
+	public void exitFile(JParser.FileContext ctx) {
+		currentScope = currentScope.getEnclosingScope();
+	}
+
+	@Override
 	public void enterMain(JParser.MainContext ctx) {
 		Type type = ComputeTypes.JVOID_TYPE;
 		JMethod main = new JMethod("main",ctx);
@@ -67,23 +72,20 @@ public class DefineScopesAndSymbols extends JBaseListener {
 
 	public void enterClassDeclaration (JParser.ClassDeclarationContext ctx){
 		String className = ctx.name.getText();
-		//String superclassName;
-//		if(ctx.superClass.getText()!=null){
-//			superclassName = ctx.superClass.getText();
-//			JClass scs = new JClass(superclassName,ctx.getParent());
-//			currentScope.define(scs);
-//		}
+		String superclassName;
 		JClass cs = new JClass(className,ctx.getParent());
-
+		if(ctx.superClass!=null){
+			superclassName = ctx.superClass.getText();
+			cs.setSuperClass(superclassName);
+		}
 		currentScope.define(cs);
-
 		currentScope = cs;
-		ctx.scope = (JClass) currentScope;//ClassDeclarationContext ctx's scope field is JClass type
 	}
 	public void exitClassDeclaration(JParser.ClassDeclarationContext ctx)
 	{
 		currentScope = currentScope.getEnclosingScope();
 	}
+
 
 	@Override
 	public void enterMethodDeclaration(JParser.MethodDeclarationContext ctx) {
@@ -117,7 +119,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope.define(f);
 		f.setType((Type) type);
 	}
-
 
 	@Override
 	public void enterFormalParameter(JParser.FormalParameterContext ctx) {

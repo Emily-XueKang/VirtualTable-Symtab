@@ -4,6 +4,7 @@ import cs652.j.parser.JBaseListener;
 import cs652.j.parser.JParser;
 import org.antlr.symtab.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class ComputeTypes extends JBaseListener {
 	protected StringBuilder buf = new StringBuilder();
@@ -18,14 +19,10 @@ public class ComputeTypes extends JBaseListener {
 		this.currentScope = globals;
 	}
 
-	// ...
-
-	// S U P P O R T
-
 
     @Override
     public void enterFile(JParser.FileContext ctx) {
-	    currentScope = ctx.scope;
+	   currentScope = ctx.scope;
     }
 
     @Override
@@ -48,47 +45,26 @@ public class ComputeTypes extends JBaseListener {
         currentScope = ctx.scope;
     }
 
-//    @Override
-//    public void exitFieldRef(JParser.FieldRefContext ctx) {
-//        String id = ctx.ID().getText();
-//        TypedSymbol var;
-//        JClass cs = (JClass) ctx.expression().type;
-//	    var = (TypedSymbol) cs.resolveMember(id);
-//	    if(var != null){
-//        ctx.type = var.getType();
-//        }
-//        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
-//    }
-//
-
 
     @Override
     public void exitFieldRef(JParser.FieldRefContext ctx) {
         String id = ctx.ID().getText();
         String text = ctx.getText();
-        System.out.println("id is: "+ id);
-        System.out.println("text is: "+ text);
         TypedSymbol var;
         JClass cs = (JClass) ctx.expression().type;
-        System.out.println("class: "+ cs);
         if(cs != null){
             var = (TypedSymbol) cs.resolveMember(id);
-            if(var != null)
-            ctx.type = var.getType();
+            if(var != null){
+                ctx.type = var.getType();
+            }
         }
-//	    var = (TypedSymbol) cs.resolveMember(id);
-//	    if(var != null){
-//        ctx.type = var.getType();
-//        }
-        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
+        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
     }
-
     @Override
-    public void enterCtorCall(JParser.CtorCallContext ctx) {
-        Symbol type = currentScope.resolve(ctx.ID().getText());
-        //TypedSymbol var = (TypedSymbol) currentScope.resolve(ctx.ID().getText());
-        ctx.type = (Type) type;
-        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
+    public void exitCtorCall(JParser.CtorCallContext ctx) {
+        Symbol var = currentScope.resolve(ctx.ID().getText());
+        ctx.type = (Type) var;
+        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
     }
 
     @Override
@@ -104,25 +80,22 @@ public class ComputeTypes extends JBaseListener {
 
     @Override
     public void exitIdRef(JParser.IdRefContext ctx) {
-	    System.out.println("idscope:" + currentScope);
         TypedSymbol var = (TypedSymbol)currentScope.resolve(ctx.ID().getText());
-        System.out.println("var is :" + var);
         if(var != null){
             ctx.type = var.getType();
         }
-        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
+        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
     }
 
     @Override
     public void exitThisRef(JParser.ThisRefContext ctx) {
-        System.out.println("this in scope:" + currentScope.getEnclosingScope().getEnclosingScope());
 	    JClass c = (JClass) currentScope.getEnclosingScope().getEnclosingScope().resolve(currentScope.getEnclosingScope().getEnclosingScope().getName());
         ctx.type = c;
-        buf.append(ctx.getText() + " is " +ctx.type + "\n" );
+        buf.append(ctx.getText() + " is " +ctx.type.getName() + "\n" );
     }
 
     @Override
-    public void enterNullRef(JParser.NullRefContext ctx) {
+    public void exitNullRef(JParser.NullRefContext ctx) {
         ctx.type = JVOID_TYPE;
     }
 
@@ -132,7 +105,7 @@ public class ComputeTypes extends JBaseListener {
         if(mvar !=null){
             ctx.type = mvar.getType();
         }
-        buf.append(ctx.getText() + " is " +ctx.type + "\n");
+        buf.append(ctx.getText() + " is " +ctx.type.getName() + "\n");
     }
 
     @Override
@@ -146,9 +119,8 @@ public class ComputeTypes extends JBaseListener {
                 ctx.type = mvar.getType();
             }
         }
-        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
+        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
     }
-
 
     public String getRefOutput() {
 		return buf.toString();
