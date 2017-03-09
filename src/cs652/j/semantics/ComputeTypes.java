@@ -3,7 +3,6 @@ package cs652.j.semantics;
 import cs652.j.parser.JBaseListener;
 import cs652.j.parser.JParser;
 import org.antlr.symtab.*;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ComputeTypes extends JBaseListener {
 	protected StringBuilder buf = new StringBuilder();
@@ -48,7 +47,6 @@ public class ComputeTypes extends JBaseListener {
     @Override
     public void exitFieldRef(JParser.FieldRefContext ctx) {
         String id = ctx.ID().getText();
-        String text = ctx.getText();
         TypedSymbol var;
         JClass cs = (JClass) ctx.expression().type;
         if(cs != null){
@@ -89,7 +87,7 @@ public class ComputeTypes extends JBaseListener {
     @Override
     public void exitThisRef(JParser.ThisRefContext ctx) {
 	    JClass c = (JClass) currentScope.getEnclosingScope().getEnclosingScope().resolve(currentScope.getEnclosingScope().getEnclosingScope().getName());
-        ctx.type = c;
+	    ctx.type = c;
         buf.append(ctx.getText() + " is " +ctx.type.getName() + "\n" );
     }
 

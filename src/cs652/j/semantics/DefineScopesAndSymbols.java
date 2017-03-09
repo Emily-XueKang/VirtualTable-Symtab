@@ -63,7 +63,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 	@Override
 	public void enterLocalVariableDeclaration(JParser.LocalVariableDeclarationContext ctx) {
 		Symbol type = currentScope.resolve(ctx.jType().getText());
-		String scopename = currentScope.getName();
 		String id = ctx.ID().getText();
 		JVar var = new JVar(id);
 		currentScope.define(var);
@@ -130,4 +129,3 @@ public class DefineScopesAndSymbols extends JBaseListener {
 	}
 
 }
-
