@@ -25,7 +25,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope.define((JPrimitiveType)JSTRING_TYPE);
 		currentScope.define((JPrimitiveType)JVOID_TYPE);
 	}
-
 	@Override
 	public void exitFile(JParser.FileContext ctx) {
 		currentScope = currentScope.getEnclosingScope();
@@ -40,7 +39,6 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope = main;
 		ctx.scope = (JMethod) currentScope;
 	}
-
 	@Override
 	public void exitMain(JParser.MainContext ctx) {
 		currentScope = currentScope.getEnclosingScope();
@@ -53,20 +51,10 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope = ls;
 		ctx.scope = (LocalScope) currentScope;
 	}
-
 	@Override
 	public void exitBlock(JParser.BlockContext ctx)
 	{
 		currentScope = currentScope.getEnclosingScope();
-	}
-
-	@Override
-	public void enterLocalVariableDeclaration(JParser.LocalVariableDeclarationContext ctx) {
-		Symbol type = currentScope.resolve(ctx.jType().getText());
-		String id = ctx.ID().getText();
-		JVar var = new JVar(id);
-		currentScope.define(var);
-		var.setType((Type) type);
 	}
 
 	public void enterClassDeclaration (JParser.ClassDeclarationContext ctx){
@@ -85,29 +73,36 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		currentScope = currentScope.getEnclosingScope();
 	}
 
-
 	@Override
 	public void enterMethodDeclaration(JParser.MethodDeclarationContext ctx) {
 		String id = ctx.ID().getText();
 		JMethod m= new JMethod(id,ctx);
-		JArg thisarg = new JArg("this");
+		JArg thisArg = new JArg("this");
 		if(ctx.jType()!=null){
-			Symbol type = currentScope.resolve(ctx.jType().getText());
-			m.setType((Type) type);
+			Symbol thisType = currentScope.resolve(ctx.jType().getText());
+			m.setType((Type)thisType);
 		}
 		else{
 			m.setType(JVOID_TYPE);
 		}
-		thisarg.setType((Type)currentScope.resolve(currentScope.getName()));
+		thisArg.setType((Type)currentScope.resolve(currentScope.getName()));
 		currentScope.define(m);
 		currentScope = m;
-		currentScope.define(thisarg);
+		currentScope.define(thisArg);
 		ctx.scope = (JMethod) currentScope;
 	}
-
 	@Override
 	public void exitMethodDeclaration(JParser.MethodDeclarationContext ctx) {
 		currentScope = currentScope.getEnclosingScope();
+	}
+
+	@Override
+	public void enterLocalVariableDeclaration(JParser.LocalVariableDeclarationContext ctx) {
+		Symbol type = currentScope.resolve(ctx.jType().getText());
+		String id = ctx.ID().getText();
+		JVar var = new JVar(id);
+		currentScope.define(var);
+		var.setType((Type) type);
 	}
 
 	@Override
@@ -116,16 +111,15 @@ public class DefineScopesAndSymbols extends JBaseListener {
 		String id = ctx.ID().getText();
 		JField f = new JField(id);
 		currentScope.define(f);
-		f.setType((Type) type);
+		f.setType((Type)type);
 	}
 
 	@Override
 	public void enterFormalParameter(JParser.FormalParameterContext ctx) {
 		Symbol type = currentScope.resolve(ctx.jType().getText());
 		String id = ctx.ID().getText();
-		JArg pv = new JArg(id);
-		pv.setType((Type)type);
-		currentScope.define(pv);
+		JArg para = new JArg(id);
+		para.setType((Type)type);
+		currentScope.define(para);
 	}
-
 }

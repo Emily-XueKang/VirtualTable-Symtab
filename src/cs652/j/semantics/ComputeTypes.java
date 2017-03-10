@@ -13,10 +13,20 @@ public class ComputeTypes extends JBaseListener {
 	public static final Type JSTRING_TYPE = new JPrimitiveType("string");
 	public static final Type JVOID_TYPE = new JPrimitiveType("void");
 
-	public ComputeTypes(GlobalScope globals) {
+	public ComputeTypes(GlobalScope globals)
+    {
 		this.currentScope = globals;
 	}
 
+    /**
+     * Append name and type of this symbol to output.
+     * @param buf StringBuilder
+     * @param name of symbol
+     * @param type of symbol
+     */
+	public void appendOutput(StringBuilder buf, String name, String type){
+	    buf.append(name + " is " + type + "\n");
+    }
 
     @Override
     public void enterFile(JParser.FileContext ctx) {
@@ -55,13 +65,13 @@ public class ComputeTypes extends JBaseListener {
                 ctx.type = var.getType();
             }
         }
-        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
     @Override
     public void exitCtorCall(JParser.CtorCallContext ctx) {
         Symbol var = currentScope.resolve(ctx.ID().getText());
         ctx.type = (Type) var;
-        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     @Override
@@ -72,7 +82,7 @@ public class ComputeTypes extends JBaseListener {
         else if(ctx.INT()!=null){
 	        ctx.type = JINT_TYPE;
         }
-        buf.append(ctx.getText()+ " is " +ctx.type + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     @Override
@@ -81,14 +91,16 @@ public class ComputeTypes extends JBaseListener {
         if(var != null){
             ctx.type = var.getType();
         }
-        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     @Override
     public void exitThisRef(JParser.ThisRefContext ctx) {
-	    JClass c = (JClass) currentScope.getEnclosingScope().getEnclosingScope().resolve(currentScope.getEnclosingScope().getEnclosingScope().getName());
-	    ctx.type = c;
-        buf.append(ctx.getText() + " is " +ctx.type.getName() + "\n" );
+	    JMethod ms = (JMethod) currentScope.getEnclosingScope();
+	    JClass cs = (JClass) ms.getEnclosingScope();
+	    JClass cType = (JClass) cs.resolve(cs.getName());
+	    ctx.type = cType;
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     @Override
@@ -102,7 +114,7 @@ public class ComputeTypes extends JBaseListener {
         if(mvar !=null){
             ctx.type = mvar.getType();
         }
-        buf.append(ctx.getText() + " is " +ctx.type.getName() + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     @Override
@@ -116,7 +128,7 @@ public class ComputeTypes extends JBaseListener {
                 ctx.type = mvar.getType();
             }
         }
-        buf.append(ctx.getText()+ " is " +ctx.type.getName() + "\n");
+        appendOutput(buf,ctx.getText(),ctx.type.getName());
     }
 
     public String getRefOutput() {
